@@ -135,20 +135,6 @@
         z-index: -1;
         opacity: 10%;
     }
-
-    @keyframes rotate {
-        from {
-            transform: rotate(0deg);
-        }
-
-        to {
-            transform: rotate(360deg);
-        }
-    }
-
-    .rotating {
-        animation: rotate 2s linear infinite;
-    }
 </style>
 
 <script>
@@ -220,9 +206,15 @@
         }
 
         renderPittImages(outcome, imageUrl) {
+            if (outcome > 25)
+            {
+                outcome = 25;
+            }
+
             d3.selectAll("img")
                 .filter(function() { return d3.select(this).classed("removeTag"); })
                 .remove();
+
             const body = d3.select("body");
 
             const bodyWidth = parseInt(body.style("width"));
@@ -236,26 +228,25 @@
                     case 0:
                         break;
                     case 1:
-                        startX = bodyWidth - 300;
+                        startX = bodyWidth;
                         break;
                     case 2:
-                        startY = bodyHeight - 300;
+                        startY = bodyHeight;
                         break;
                     case 3:
-                        startX = bodyWidth - 300;
-                        startY = bodyHeight - 300;
+                        startX = bodyWidth;
+                        startY = bodyHeight;
                         break;
                 }
 
-                let endX = this.getRandomNonCenterNumber() * (bodyWidth - 300);
-                let endY = this.getRandomNonCenterNumber() * (bodyHeight - 300);
+                let endX = this.getRandomNonCenterNumber() * (bodyWidth);
+                let endY = this.getRandomNonCenterNumber() * (bodyHeight);
 
                 body.append("img")
                     .attr("src", imageUrl)
                     .style("position", "absolute")
                     .attr("width", 0)
                     .attr("height", 0)
-                    .attr("class", "rotating")
                     .attr("class", "removeTag")
                     .style("left", startX + "px")
                     .style("top", startY + "px")
@@ -268,10 +259,6 @@
                     .style("left", endX + "px")
                     .style("top", endY + "px");
             }
-
-            setTimeout(() => {
-                d3.selectAll("img").classed("rotating", false);
-            }, 2000);
         }
 
         addPittImages(outcome) {
