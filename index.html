@@ -170,6 +170,7 @@ class PittCalculator {
     }
 
     addPittImages(outcome) {
+        d3.selectAll("img").remove();
         const body = d3.select("body");
 
         const bodyWidth = parseInt(body.style("width"));
