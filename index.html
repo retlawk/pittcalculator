@@ -209,16 +209,6 @@
             this._successOutputPlaceholder.innerHTML = "";
         }
 
-        getRandomNonCenterNumber() {
-            const random = Math.random();
-
-            if (random < 0.5) {
-                return Math.random() * 0.3;
-            } else {
-                return 0.7 + Math.random() * (1 - 0.7);
-            }
-        }
-
         renderPittImages(outcome, imageUrl, imageWidth = 300) {
             if (outcome > 50)
             {
@@ -234,26 +224,32 @@
             const bodyHeight = parseInt(body.style("height"));
 
             for (let i = 0; i < outcome; i++) {
-                let startX = 0
-                let startY = 0
+                let startX = 0;
+                let startY = 0;
+                let endX = Math.random() * 0.3;
+                let endY = Math.random() * 0.3;
 
                 switch (i % 4) {
                     case 0:
                         break;
                     case 1:
                         startX = bodyWidth - 300;
+                        endX = 0.7 + Math.random() * (1 - 0.7);
                         break;
                     case 2:
                         startY = bodyHeight - 300;
+                        endY = 0.7 + Math.random() * (1 - 0.7);
                         break;
                     case 3:
                         startX = bodyWidth - 300;
                         startY = bodyHeight - 300;
+                        endX = 0.7 + Math.random() * (1 - 0.7);
+                        endY = 0.7 + Math.random() * (1 - 0.7);
                         break;
                 }
 
-                let endX = this.getRandomNonCenterNumber() * (bodyWidth - 300);
-                let endY = this.getRandomNonCenterNumber() * (bodyHeight - 300);
+                endX = endX * (bodyWidth - 300);
+                endY = endY * (bodyHeight - 300);
 
                 body.append("img")
                     .attr("src", imageUrl)
