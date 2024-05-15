@@ -290,7 +290,7 @@
 
         addPittImages(outcome) {
             if (outcome <= 100) {
-                this.renderPittImages(outcome, 'https://pittst.blob.core.windows.net/images/pitt-fles.png', 300, 300)
+                this.renderPittImages(outcome, 'https://pittst.blob.core.windows.net/images/pitt-fles.png', 150, 300)
             } else if (outcome >= 100) {
                 const outcomeCalculatedToBakken = (this._formInput.value / 6.69).toFixed(0);
                 if (outcomeCalculatedToBakken <= 1520) {
