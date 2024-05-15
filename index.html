@@ -37,6 +37,7 @@
     body {
         display: flex;
         align-items: center;
+        justify-content: center;
         flex-direction: column;
         text-align: center;
         font-family: "Gill Sans", sans-serif;
@@ -108,10 +109,12 @@
 
     #pittCalculatorErrorOutputPlaceholder {
         color: white;
+        margin-top: 20px;
     }
 
     #pittCalculatorSuccessOutputPlaceholder {
         color: white;
+        margin-top: 20px;
     }
 
     img {
@@ -183,6 +186,16 @@ class PittCalculator {
         this._successOutputPlaceholder.innerHTML = "";
     }
 
+    getRandomNonCenterNumber() {
+        const random = Math.random();
+
+        if (random < 0.5) {
+            return Math.random() * 0.3;
+        } else {
+            return 0.7 + Math.random() * (1 - 0.7);
+        }
+    }
+
     renderPittImages(outcome, imageUrl) {
         d3.selectAll("img").remove();
         const body = d3.select("body");
@@ -209,8 +222,11 @@ class PittCalculator {
                         break;
                 }
 
-                let endX = Math.random() * (bodyWidth - 300);
-                let endY = Math.random() * (bodyHeight - 300);
+                let endX = this.getRandomNonCenterNumber() * (bodyWidth - 300);
+                let endY = this.getRandomNonCenterNumber() * (bodyHeight - 300);
+
+                console.log(endX)
+                console.log(endY)
 
                 body.append("img")
                     .attr("src", imageUrl)
