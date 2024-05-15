@@ -127,13 +127,9 @@
 
     #background-image {
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
+        object-fit: fill;
         z-index: -1;
-        opacity: 10%;
+        opacity: 30%;
     }
 
     @keyframes rotate {
@@ -165,7 +161,23 @@
             d3.select("body")
                 .append("img")
                 .attr("id", "background-image")
+                .style("width", "100%")
+                .style("height", "100%")
                 .attr("src", "https://pittst.blob.core.windows.net/images/pitt-label.png")
+                .attr("alt", "Background Image");
+
+            const body = d3.select("body");
+            const bodyWidth = parseInt(body.style("width"));
+            const bodyHeight = parseInt(body.style("height"));
+
+            d3.select("body")
+                .append("img")
+                .attr("id", "background-image")
+                .style("left", bodyWidth - 200 + "px")
+                .style("top", bodyHeight - 200 + "px")
+                .style("width", "200px")
+                .style("height", "200px")
+                .attr("src", "https://pittst.blob.core.windows.net/images/boris.png")
                 .attr("alt", "Background Image");
 
             this._form.addEventListener('submit', event => {
@@ -218,8 +230,8 @@
             d3.selectAll("img")
                 .filter(function() { return d3.select(this).classed("removeTag"); })
                 .remove();
-            const body = d3.select("body");
 
+            const body = d3.select("body");
             const bodyWidth = parseInt(body.style("width"));
             const bodyHeight = parseInt(body.style("height"));
 
