@@ -2,37 +2,294 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pitt Calculator Coming Soon</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .container {
-            text-align: center;
-        }
-
-        h1 {
-            color: #333;
-        }
-
-        p {
-            color: #666;
-        }
-    </style>
+    <title>Pittcalculator.nl</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
-<body>
-    <div class="container">
-        <h1>Pitt Calculator</h1>
-        <p>Coming Soon!</p>
+<body id="pittCalculatorApp">
+    <div id="form">
+        <h1>Welkom op Pittcalculator.nl</h1>
+
+        <p>
+            Vul hier een bedrag in om het om te rekenen naar Pitt!
+        </p>
+    
+        <br>
+    
+        <form id="pittCalculatorForm">
+            <div class="pittCalculatorInputContainer">
+                <input id="pittCalculatorInput" type="text"/>
+            </div>
+            <button id="pittSubmitButton" type="submit">Hoeveel Pitt is dit?</button>
+        </form>
+    
+        <div id="pittCalculatorErrorOutputPlaceholder"></div>
+    
+        <div id="pittCalculatorSuccessOutputPlaceholder"></div>
     </div>
 </body>
+
+<style>
+    body {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        text-align: center;
+        font-family: "Gill Sans", sans-serif;
+        font-size: 1.2em;
+    }
+
+    form {
+        display: flex;
+        align-items: center;
+        width: 480px;
+        flex-direction: row;
+    }
+
+    h1 {
+        color: white;
+    }
+
+    p {
+        color: white;
+    }
+
+    #form {
+        z-index: 2;
+        padding: 8px;
+        background-color: black;
+        border-radius: 8px;
+    }
+
+    .pittCalculatorInputContainer {
+        position: relative;
+        width: 100%;
+        margin-right: 8px;
+    }
+
+    .pittCalculatorInputContainer::before {
+        content: "€";
+        position: absolute;
+        left: 0;
+        top: 0;
+        font-size: 1.2em;
+        color: gray;
+        width: 40px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    input#pittCalculatorInput {
+        width: 100%;
+        padding: 8px 8px 8px 40px;
+        font-size: 1.2em;
+        position: relative;
+        box-sizing: border-box;
+        border-radius: 8px;
+    }
+
+    button {
+        width: 100%;
+        background: green;
+        cursor: pointer;
+        padding: 8px;
+        color: #FFF;
+        font-weight: bold;
+        border-radius: 8px;
+        font-size: 1.2em;
+    }
+
+    #pittCalculatorErrorOutputPlaceholder {
+        color: white;
+    }
+
+    #pittCalculatorSuccessOutputPlaceholder {
+        color: white;
+    }
+
+    img {
+        /*position: absolute;*/
+    }
+</style>
+
+<script>
+class PittCalculator {
+
+    constructor() {
+
+        this._form = document.getElementById("pittCalculatorForm");
+        this._formButton = document.getElementById("pittSubmitButton");
+        this._formInput = document.getElementById("pittCalculatorInput");
+        this._errorOutputPlaceholder = document.getElementById("pittCalculatorErrorOutputPlaceholder");
+        this._successOutputPlaceholder = document.getElementById("pittCalculatorSuccessOutputPlaceholder");
+
+        this._form.addEventListener('submit', event => {
+            event.preventDefault();
+            this.formSubmit()
+        });
+    }
+
+    formSubmit() {
+        this.emptyPlaceholders();
+
+        if (this._formInput.value === "") {
+            this._errorOutputPlaceholder.innerHTML = "Vul een bedrag in.";
+        } else if (this._formInput.value.match(/^[0-9]+$/) == null) {
+            this._errorOutputPlaceholder.innerHTML = "Dit is geen bedrag maatje.";
+        } else {
+
+            const outcome = (this._formInput.value / 0.27875).toFixed(0);
+
+            if (outcome <= 24) {
+                this._successOutputPlaceholder.innerHTML = "Hier kun je " + outcome + " lekkere fleskes Pitt van kopen. Verrekte zwerver." + '<br /><br />';
+            } else if (outcome >= 25) {
+
+                const outcomeCalculatedToBakken = (this._formInput.value / 6.69).toFixed(0);
+                this._successOutputPlaceholder.innerHTML = "Hier kun je " + outcomeCalculatedToBakken + " bakken Pitt voor halen." + '<br /><br />';
+
+                // Een vrachtwagen bevat 38 pallets, elke pallet 40 kratten pils.
+                if (outcomeCalculatedToBakken >= 1520) {
+                    const outcomeToTruck = (outcomeCalculatedToBakken / 1520).toFixed(0);
+                    this._successOutputPlaceholder.innerHTML = "Hier kun je " + outcomeToTruck + " vrachtwagen(s) vol mee Pitt voor halen Poah, flink fiske." + '<br /><br />';
+                }
+            }
+
+            this.addPittImages(outcome);
+        }
+    }
+
+    emptyPlaceholders() {
+        this._errorOutputPlaceholder.innerHTML = "";
+        this._successOutputPlaceholder.innerHTML = "";
+    }
+
+    addPittImages(outcome) {
+        const body = d3.select("body");
+
+        const bodyWidth = parseInt(body.style("width"));
+        const bodyHeight = parseInt(body.style("height"));
+
+        if (outcome <= 24) {
+            for (let i = 0; i < outcome; i++) {
+                let startX = 0
+                let startY = 0
+
+                switch(i % 4){
+                    case 0:
+                        console.log("top left");
+                        break;
+                    case 1:
+                        console.log("top right");
+                        startX = bodyWidth - 300;
+                        break;
+                    case 2:
+                        console.log("bottom left");
+                        startY = bodyHeight - 300;
+                        break;
+                    case 3:
+                        console.log("bottom right");
+                        startX = bodyWidth - 300;
+                        startY = bodyHeight - 300;
+                        break;
+                }
+
+                let endX = Math.random() * (bodyWidth - 300);
+                let endY = Math.random() * (bodyHeight - 300);
+
+                body.append("img")
+                    .attr("src", 'https://pittst.blob.core.windows.net/images/pitt-fles.png')
+                    .style("position", "absolute")
+                    .attr("width", 300)
+                    .attr("height", 300)
+                    .style("left", startX + "px")
+                    .style("top", startY + "px")
+                    .style("z-index", 1)
+                    .transition()
+                    .delay(i * 250)
+                    .duration(2000)
+                    .style("left", endX + "px")
+                    .style("top", endY + "px");
+            }
+
+            // for (let i = 0; i < outcome; i++) {
+            //     let img = document.createElement('img');
+            //     img.src = 'images/pitt-fles.png';
+            //     this._successOutputPlaceholder.appendChild(img);
+            //     img.style.width = 10 + "%";
+            // }
+        } else if (outcome >= 25) {
+            const outcomeCalculatedToBakken = (this._formInput.value / 6.69).toFixed(0);
+
+            if (outcomeCalculatedToBakken <= 1520) {
+                let imgSrc = 'https://pittst.blob.core.windows.net/images/pitt-bak.jpg';
+
+                for (let i = 0; i < outcomeCalculatedToBakken; i++) {
+                    let img = document.createElement('img');
+                    img.src = imgSrc;
+                    this._successOutputPlaceholder.appendChild(img);
+                    img.style.width = 20 + "%";
+                }
+            } else {
+                const imgSrc = 'https://pittst.blob.core.windows.net/images/pitt-truck.png';
+
+                const outcomeToTruck = (outcomeCalculatedToBakken / 1520).toFixed(0);
+
+                for (let i = 0; i < outcomeToTruck; i++) {
+                    let img = document.createElement('img');
+                    img.src = imgSrc;
+                    this._successOutputPlaceholder.appendChild(img);
+                    img.style.width = 50 + "%";
+                }
+            }
+        }
+    }
+
+    randomDirection() {
+        const directions = ["top", "bottom", "left", "right"];
+        return directions[Math.floor(Math.random() * directions.length)];
+    }
+
+    calculatePositions(direction) {
+        let startX, startY, endX, endY;
+
+        switch (direction) {
+            case "top":
+            startX = Math.random() * width;
+            startY = -50;
+            endX = Math.random() * width;
+            endY = height / 2;
+            break;
+            case "bottom":
+            startX = Math.random() * width;
+            startY = height + 50;
+            endX = Math.random() * width;
+            endY = height / 2;
+            break;
+            case "left":
+            startX = -50;
+            startY = Math.random() * height;
+            endX = width / 2;
+            endY = Math.random() * height;
+            break;
+            case "right":
+            startX = width + 50;
+            startY = Math.random() * height;
+            endX = width / 2;
+            endY = Math.random() * height;
+            break;
+        }
+
+        return { startX, startY, endX, endY };
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const pittCalculator = document.getElementById("pittCalculatorApp");
+    if (pittCalculator !== null) {
+        new PittCalculator(pittCalculator);
+    }
+});
+
+</script>
 </html>
