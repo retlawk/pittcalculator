@@ -48,6 +48,7 @@
         align-items: center;
         width: 480px;
         flex-direction: row;
+        margin-bottom: 8px;
     }
 
     h1 {
@@ -116,6 +117,19 @@
     img {
         /*position: absolute;*/
     }
+
+    @keyframes rotate {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .rotating {
+      animation: rotate 2s linear infinite;
+    }
 </style>
 
 <script>
@@ -169,32 +183,27 @@ class PittCalculator {
         this._successOutputPlaceholder.innerHTML = "";
     }
 
-    addPittImages(outcome) {
+    renderPittImages(outcome, imageUrl) {
         d3.selectAll("img").remove();
         const body = d3.select("body");
 
         const bodyWidth = parseInt(body.style("width"));
         const bodyHeight = parseInt(body.style("height"));
 
-        if (outcome <= 24) {
-            for (let i = 0; i < outcome; i++) {
+        for (let i = 0; i < outcome; i++) {
                 let startX = 0
                 let startY = 0
 
                 switch(i % 4){
                     case 0:
-                        console.log("top left");
                         break;
                     case 1:
-                        console.log("top right");
                         startX = bodyWidth - 300;
                         break;
                     case 2:
-                        console.log("bottom left");
                         startY = bodyHeight - 300;
                         break;
                     case 3:
-                        console.log("bottom right");
                         startX = bodyWidth - 300;
                         startY = bodyHeight - 300;
                         break;
@@ -204,10 +213,11 @@ class PittCalculator {
                 let endY = Math.random() * (bodyHeight - 300);
 
                 body.append("img")
-                    .attr("src", 'https://pittst.blob.core.windows.net/images/pitt-fles.png')
+                    .attr("src", imageUrl)
                     .style("position", "absolute")
                     .attr("width", 0)
                     .attr("height", 0)
+                    .attr("class", "rotating")
                     .style("left", startX + "px")
                     .style("top", startY + "px")
                     .style("z-index", 1)
@@ -220,75 +230,27 @@ class PittCalculator {
                     .style("top", endY + "px");
             }
 
-            // for (let i = 0; i < outcome; i++) {
-            //     let img = document.createElement('img');
-            //     img.src = 'images/pitt-fles.png';
-            //     this._successOutputPlaceholder.appendChild(img);
-            //     img.style.width = 10 + "%";
-            // }
+            setTimeout(() => {
+                d3.selectAll("img").classed("rotating", false);
+            }, 2000);
+    }
+
+    addPittImages(outcome) {
+        if (outcome <= 24) {
+            this.renderPittImages(outcome, 'https://pittst.blob.core.windows.net/images/pitt-fles.png')
         } else if (outcome >= 25) {
             const outcomeCalculatedToBakken = (this._formInput.value / 6.69).toFixed(0);
-
             if (outcomeCalculatedToBakken <= 1520) {
-                let imgSrc = 'https://pittst.blob.core.windows.net/images/pitt-bak.jpg';
-
                 for (let i = 0; i < outcomeCalculatedToBakken; i++) {
-                    let img = document.createElement('img');
-                    img.src = imgSrc;
-                    this._successOutputPlaceholder.appendChild(img);
-                    img.style.width = 20 + "%";
+                    this.renderPittImages(outcomeCalculatedToBakken, 'https://pittst.blob.core.windows.net/images/pitt-bak.png')
                 }
             } else {
-                const imgSrc = 'https://pittst.blob.core.windows.net/images/pitt-truck.png';
-
                 const outcomeToTruck = (outcomeCalculatedToBakken / 1520).toFixed(0);
-
                 for (let i = 0; i < outcomeToTruck; i++) {
-                    let img = document.createElement('img');
-                    img.src = imgSrc;
-                    this._successOutputPlaceholder.appendChild(img);
-                    img.style.width = 50 + "%";
+                    this.renderPittImages(outcomeToTruck, 'https://pittst.blob.core.windows.net/images/pitt-truck.png')
                 }
             }
         }
-    }
-
-    randomDirection() {
-        const directions = ["top", "bottom", "left", "right"];
-        return directions[Math.floor(Math.random() * directions.length)];
-    }
-
-    calculatePositions(direction) {
-        let startX, startY, endX, endY;
-
-        switch (direction) {
-            case "top":
-            startX = Math.random() * width;
-            startY = -50;
-            endX = Math.random() * width;
-            endY = height / 2;
-            break;
-            case "bottom":
-            startX = Math.random() * width;
-            startY = height + 50;
-            endX = Math.random() * width;
-            endY = height / 2;
-            break;
-            case "left":
-            startX = -50;
-            startY = Math.random() * height;
-            endX = width / 2;
-            endY = Math.random() * height;
-            break;
-            case "right":
-            startX = width + 50;
-            startY = Math.random() * height;
-            endX = width / 2;
-            endY = Math.random() * height;
-            break;
-        }
-
-        return { startX, startY, endX, endY };
     }
 }
 
