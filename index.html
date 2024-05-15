@@ -209,7 +209,7 @@
             this._successOutputPlaceholder.innerHTML = "";
         }
 
-        renderPittImages(outcome, imageUrl, imageWidth = 300) {
+        renderPittImages(outcome, imageUrl, imageWidth = 300, imageHeight = 300) {
             if (outcome > 50)
             {
                 outcome = 50
@@ -233,23 +233,23 @@
                     case 0:
                         break;
                     case 1:
-                        startX = bodyWidth - 300;
+                        startX = bodyWidth - imageWidth;
                         endX = 0.7 + Math.random() * (1 - 0.7);
                         break;
                     case 2:
-                        startY = bodyHeight - 300;
+                        startY = bodyHeight - imageHeight;
                         endY = 0.7 + Math.random() * (1 - 0.7);
                         break;
                     case 3:
-                        startX = bodyWidth - 300;
-                        startY = bodyHeight - 300;
+                        startX = bodyWidth - imageWidth;
+                        startY = bodyHeight - imageHeight;
                         endX = 0.7 + Math.random() * (1 - 0.7);
                         endY = 0.7 + Math.random() * (1 - 0.7);
                         break;
                 }
 
-                endX = endX * (bodyWidth - 300);
-                endY = endY * (bodyHeight - 300);
+                endX = endX * (bodyWidth - imageWidth);
+                endY = endY * (bodyHeight - imageHeight);
 
                 body.append("img")
                     .attr("src", imageUrl)
@@ -265,7 +265,7 @@
                     .delay(i * 250)
                     .duration(2000)
                     .attr("width", imageWidth)
-                    .attr("height", 300)
+                    .attr("height", imageHeight)
                     .style("left", endX + "px")
                     .style("top", endY + "px");
             }
@@ -277,17 +277,17 @@
 
         addPittImages(outcome) {
             if (outcome <= 100) {
-                this.renderPittImages(outcome, 'https://pittst.blob.core.windows.net/images/pitt-fles.png')
+                this.renderPittImages(outcome, 'https://pittst.blob.core.windows.net/images/pitt-fles.png', 300, 300)
             } else if (outcome >= 100) {
                 const outcomeCalculatedToBakken = (this._formInput.value / 6.69).toFixed(0);
                 if (outcomeCalculatedToBakken <= 1520) {
                     for (let i = 0; i < outcomeCalculatedToBakken; i++) {
-                        this.renderPittImages(outcomeCalculatedToBakken, 'https://pittst.blob.core.windows.net/images/pitt-bak.png')
+                        this.renderPittImages(outcomeCalculatedToBakken, 'https://pittst.blob.core.windows.net/images/pitt-bak.png', 300, 300)
                     }
                 } else {
                     const outcomeToTruck = (outcomeCalculatedToBakken / 1520).toFixed(0);
                     for (let i = 0; i < outcomeToTruck; i++) {
-                        this.renderPittImages(outcomeToTruck, 'https://pittst.blob.core.windows.net/images/pitt-truck.png', 600)
+                        this.renderPittImages(outcomeToTruck, 'https://pittst.blob.core.windows.net/images/pitt-truck.png', 600, 300)
                     }
                 }
             }
