@@ -280,9 +280,9 @@
         }
 
         addPittImages(outcome) {
-            if (outcome <= 24) {
+            if (outcome <= 100) {
                 this.renderPittImages(outcome, 'https://pittst.blob.core.windows.net/images/pitt-fles.png')
-            } else if (outcome >= 25) {
+            } else if (outcome >= 100) {
                 const outcomeCalculatedToBakken = (this._formInput.value / 6.69).toFixed(0);
                 if (outcomeCalculatedToBakken <= 1520) {
                     for (let i = 0; i < outcomeCalculatedToBakken; i++) {
