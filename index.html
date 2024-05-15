@@ -205,14 +205,16 @@ class PittCalculator {
                 body.append("img")
                     .attr("src", 'https://pittst.blob.core.windows.net/images/pitt-fles.png')
                     .style("position", "absolute")
-                    .attr("width", 300)
-                    .attr("height", 300)
+                    .attr("width", 0)
+                    .attr("height", 0)
                     .style("left", startX + "px")
                     .style("top", startY + "px")
                     .style("z-index", 1)
                     .transition()
                     .delay(i * 250)
                     .duration(2000)
+                    .attr("width", 300)
+                    .attr("height", 300)
                     .style("left", endX + "px")
                     .style("top", endY + "px");
             }
