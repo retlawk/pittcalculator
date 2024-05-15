@@ -186,9 +186,9 @@
 
                 const outcome = (this._formInput.value / 0.27875).toFixed(0);
 
-                if (outcome <= 24) {
+                if (outcome <= 100) {
                     this._successOutputPlaceholder.innerHTML = "Hier kun je " + outcome + " lekkere fleskes Pitt van kopen. Verrekte zwerver." + '<br /><br />';
-                } else if (outcome >= 25) {
+                } else if (outcome >= 100) {
 
                     const outcomeCalculatedToBakken = (this._formInput.value / 6.69).toFixed(0);
                     this._successOutputPlaceholder.innerHTML = "Hier kun je " + outcomeCalculatedToBakken + " bakken Pitt voor halen." + '<br /><br />';
