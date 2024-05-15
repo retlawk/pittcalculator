@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Pittcalculator.nl</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
+
 <body id="pittCalculatorApp">
     <div id="form">
         <h1>Welkom op Pittcalculator.nl</h1>
@@ -12,26 +14,28 @@
         <p>
             Vul hier een bedrag in om het om te rekenen naar Pitt!
         </p>
-    
+
         <br>
-    
+
         <form id="pittCalculatorForm">
             <div class="pittCalculatorInputContainer">
-                <input id="pittCalculatorInput" type="text"/>
+                <input id="pittCalculatorInput" type="text" />
             </div>
             <button id="pittSubmitButton" type="submit">Hoeveel Pitt is dit?</button>
         </form>
-    
+
         <div id="pittCalculatorErrorOutputPlaceholder"></div>
-    
+
         <div id="pittCalculatorSuccessOutputPlaceholder"></div>
     </div>
 </body>
 
 <style>
-    html, body {
+    html,
+    body {
         margin: 0;
         height: 100%;
+        overflow: hidden;
     }
 
     body {
@@ -121,93 +125,114 @@
         /*position: absolute;*/
     }
 
+    #background-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: -1;
+        opacity: 10%;
+    }
+
     @keyframes rotate {
-      from {
-        transform: rotate(0deg);
-      }
-      to {
-        transform: rotate(360deg);
-      }
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
     }
 
     .rotating {
-      animation: rotate 2s linear infinite;
+        animation: rotate 2s linear infinite;
     }
 </style>
 
 <script>
-class PittCalculator {
+    class PittCalculator {
 
-    constructor() {
+        constructor() {
 
-        this._form = document.getElementById("pittCalculatorForm");
-        this._formButton = document.getElementById("pittSubmitButton");
-        this._formInput = document.getElementById("pittCalculatorInput");
-        this._errorOutputPlaceholder = document.getElementById("pittCalculatorErrorOutputPlaceholder");
-        this._successOutputPlaceholder = document.getElementById("pittCalculatorSuccessOutputPlaceholder");
+            this._form = document.getElementById("pittCalculatorForm");
+            this._formButton = document.getElementById("pittSubmitButton");
+            this._formInput = document.getElementById("pittCalculatorInput");
+            this._errorOutputPlaceholder = document.getElementById("pittCalculatorErrorOutputPlaceholder");
+            this._successOutputPlaceholder = document.getElementById("pittCalculatorSuccessOutputPlaceholder");
 
-        this._form.addEventListener('submit', event => {
-            event.preventDefault();
-            this.formSubmit()
-        });
-    }
+            d3.select("body")
+                .append("img")
+                .attr("id", "background-image")
+                .attr("src", "https://pittst.blob.core.windows.net/images/pitt-label.png")
+                .attr("alt", "Background Image");
 
-    formSubmit() {
-        this.emptyPlaceholders();
+            this._form.addEventListener('submit', event => {
+                event.preventDefault();
+                this.formSubmit()
+            });
 
-        if (this._formInput.value === "") {
-            this._errorOutputPlaceholder.innerHTML = "Vul een bedrag in.";
-        } else if (this._formInput.value.match(/^[0-9]+$/) == null) {
-            this._errorOutputPlaceholder.innerHTML = "Dit is geen bedrag maatje.";
-        } else {
+        }
 
-            const outcome = (this._formInput.value / 0.27875).toFixed(0);
+        formSubmit() {
+            this.emptyPlaceholders();
 
-            if (outcome <= 24) {
-                this._successOutputPlaceholder.innerHTML = "Hier kun je " + outcome + " lekkere fleskes Pitt van kopen. Verrekte zwerver." + '<br /><br />';
-            } else if (outcome >= 25) {
+            if (this._formInput.value === "") {
+                this._errorOutputPlaceholder.innerHTML = "Vul een bedrag in.";
+            } else if (this._formInput.value.match(/^[0-9]+$/) == null) {
+                this._errorOutputPlaceholder.innerHTML = "Dit is geen bedrag maatje.";
+            } else {
 
-                const outcomeCalculatedToBakken = (this._formInput.value / 6.69).toFixed(0);
-                this._successOutputPlaceholder.innerHTML = "Hier kun je " + outcomeCalculatedToBakken + " bakken Pitt voor halen." + '<br /><br />';
+                const outcome = (this._formInput.value / 0.27875).toFixed(0);
 
-                // Een vrachtwagen bevat 38 pallets, elke pallet 40 kratten pils.
-                if (outcomeCalculatedToBakken >= 1520) {
-                    const outcomeToTruck = (outcomeCalculatedToBakken / 1520).toFixed(0);
-                    this._successOutputPlaceholder.innerHTML = "Hier kun je " + outcomeToTruck + " vrachtwagen(s) vol mee Pitt voor halen Poah, flink fiske." + '<br /><br />';
+                if (outcome <= 24) {
+                    this._successOutputPlaceholder.innerHTML = "Hier kun je " + outcome + " lekkere fleskes Pitt van kopen. Verrekte zwerver." + '<br /><br />';
+                } else if (outcome >= 25) {
+
+                    const outcomeCalculatedToBakken = (this._formInput.value / 6.69).toFixed(0);
+                    this._successOutputPlaceholder.innerHTML = "Hier kun je " + outcomeCalculatedToBakken + " bakken Pitt voor halen." + '<br /><br />';
+
+                    // Een vrachtwagen bevat 38 pallets, elke pallet 40 kratten pils.
+                    if (outcomeCalculatedToBakken >= 1520) {
+                        const outcomeToTruck = (outcomeCalculatedToBakken / 1520).toFixed(0);
+                        this._successOutputPlaceholder.innerHTML = "Hier kun je " + outcomeToTruck + " vrachtwagen(s) vol mee Pitt voor halen Poah, flink fiske." + '<br /><br />';
+                    }
                 }
+
+                this.addPittImages(outcome);
             }
-
-            this.addPittImages(outcome);
         }
-    }
 
-    emptyPlaceholders() {
-        this._errorOutputPlaceholder.innerHTML = "";
-        this._successOutputPlaceholder.innerHTML = "";
-    }
-
-    getRandomNonCenterNumber() {
-        const random = Math.random();
-
-        if (random < 0.5) {
-            return Math.random() * 0.3;
-        } else {
-            return 0.7 + Math.random() * (1 - 0.7);
+        emptyPlaceholders() {
+            this._errorOutputPlaceholder.innerHTML = "";
+            this._successOutputPlaceholder.innerHTML = "";
         }
-    }
 
-    renderPittImages(outcome, imageUrl) {
-        d3.selectAll("img").remove();
-        const body = d3.select("body");
+        getRandomNonCenterNumber() {
+            const random = Math.random();
 
-        const bodyWidth = parseInt(body.style("width"));
-        const bodyHeight = parseInt(body.style("height"));
+            if (random < 0.5) {
+                return Math.random() * 0.3;
+            } else {
+                return 0.7 + Math.random() * (1 - 0.7);
+            }
+        }
 
-        for (let i = 0; i < outcome; i++) {
+        renderPittImages(outcome, imageUrl) {
+            d3.selectAll("img")
+                .filter(function() { return d3.select(this).classed("removeTag"); })
+                .remove();
+            const body = d3.select("body");
+
+            const bodyWidth = parseInt(body.style("width"));
+            const bodyHeight = parseInt(body.style("height"));
+
+            for (let i = 0; i < outcome; i++) {
                 let startX = 0
                 let startY = 0
 
-                switch(i % 4){
+                switch (i % 4) {
                     case 0:
                         break;
                     case 1:
@@ -225,15 +250,13 @@ class PittCalculator {
                 let endX = this.getRandomNonCenterNumber() * (bodyWidth - 300);
                 let endY = this.getRandomNonCenterNumber() * (bodyHeight - 300);
 
-                console.log(endX)
-                console.log(endY)
-
                 body.append("img")
                     .attr("src", imageUrl)
                     .style("position", "absolute")
                     .attr("width", 0)
                     .attr("height", 0)
                     .attr("class", "rotating")
+                    .attr("class", "removeTag")
                     .style("left", startX + "px")
                     .style("top", startY + "px")
                     .style("z-index", 1)
@@ -249,33 +272,34 @@ class PittCalculator {
             setTimeout(() => {
                 d3.selectAll("img").classed("rotating", false);
             }, 2000);
-    }
+        }
 
-    addPittImages(outcome) {
-        if (outcome <= 24) {
-            this.renderPittImages(outcome, 'https://pittst.blob.core.windows.net/images/pitt-fles.png')
-        } else if (outcome >= 25) {
-            const outcomeCalculatedToBakken = (this._formInput.value / 6.69).toFixed(0);
-            if (outcomeCalculatedToBakken <= 1520) {
-                for (let i = 0; i < outcomeCalculatedToBakken; i++) {
-                    this.renderPittImages(outcomeCalculatedToBakken, 'https://pittst.blob.core.windows.net/images/pitt-bak.png')
-                }
-            } else {
-                const outcomeToTruck = (outcomeCalculatedToBakken / 1520).toFixed(0);
-                for (let i = 0; i < outcomeToTruck; i++) {
-                    this.renderPittImages(outcomeToTruck, 'https://pittst.blob.core.windows.net/images/pitt-truck.png')
+        addPittImages(outcome) {
+            if (outcome <= 24) {
+                this.renderPittImages(outcome, 'https://pittst.blob.core.windows.net/images/pitt-fles.png')
+            } else if (outcome >= 25) {
+                const outcomeCalculatedToBakken = (this._formInput.value / 6.69).toFixed(0);
+                if (outcomeCalculatedToBakken <= 1520) {
+                    for (let i = 0; i < outcomeCalculatedToBakken; i++) {
+                        this.renderPittImages(outcomeCalculatedToBakken, 'https://pittst.blob.core.windows.net/images/pitt-bak.png')
+                    }
+                } else {
+                    const outcomeToTruck = (outcomeCalculatedToBakken / 1520).toFixed(0);
+                    for (let i = 0; i < outcomeToTruck; i++) {
+                        this.renderPittImages(outcomeToTruck, 'https://pittst.blob.core.windows.net/images/pitt-truck.png')
+                    }
                 }
             }
         }
     }
-}
 
-document.addEventListener('DOMContentLoaded', () => {
-    const pittCalculator = document.getElementById("pittCalculatorApp");
-    if (pittCalculator !== null) {
-        new PittCalculator(pittCalculator);
-    }
-});
+    document.addEventListener('DOMContentLoaded', () => {
+        const pittCalculator = document.getElementById("pittCalculatorApp");
+        if (pittCalculator !== null) {
+            new PittCalculator(pittCalculator);
+        }
+    });
 
 </script>
+
 </html>
